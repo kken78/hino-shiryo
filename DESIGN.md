@@ -41,7 +41,8 @@ hino-shiryo（町の資料の検索）の設計の決定を記録する。ポー
 - 依頼者が理由を確かめ、差し替えや整理によるものと分かったときは、検索の対象に戻す。戻した資料のリンク先は、Webアーカイブの保存版があればそれにし、無ければリンクを付けない。
 - 原典の PDF そのものは、このリポジトリに入れず、公開しない（著作権は発行者にある。大きさの面でも GitHub Pages に置かない）。
 - 外されたことと依頼者の判断は、材料の hino-town-docs の台帳に列を足して記録する（hino-town-docs の DOCS_SCHEMA.md を先に改める）。このリポジトリはその列を読む。
-- その列ができるまでは、台帳の note に「Webアーカイブ」の字がある資料（町のサイトから外され、保存版から取った資料）を、外された資料とみなす（2026-11-10 の材料では、hino-town-docs の5件。計画の原典の前の版 youho の honpen-202503.pdf は、同じ資料が hino-town-docs にあるのでそちらで数える）。
+- hino-town-docs の資料は、台帳の列 removed・removed_judgment・archive_url（hino-town-docs DOCS_SCHEMA.md §4）で決める。removed がある資料のうち、removed_judgment が `replaced` のものは本文を探す対象にし、リンク先を archive_url（空ならリンク無し）にする。`withheld` と空（まだ判断していない）のものは、題だけを出す。
+- 計画の原典（shiga-hino-plans）には同じ列が無いので、その台帳の note に「Webアーカイブ」の字がある資料を、判断の付いていない外された資料とみなす（2026-11-10 の材料では、同じ資料が hino-town-docs にある1件だけで、その1件は hino-town-docs の行で数える）。
 
 ### ADR-5 広報ひのの本文
 
