@@ -220,7 +220,7 @@ function link(d,j){
 function label(d,j){return d.l?d.l[j]:(j+1)+'ページ';}
 function show(){
   const n=rows.length,np=rows.reduce((a,r)=>a+r.hits.length,0);
-  $('cnt').textContent=words.length?(n.toLocaleString()+'件の資料で見つかりました（本文の '+np.toLocaleString()+'ページ）'):(n.toLocaleString()+'件の資料');
+  $('cnt').textContent=words.length?(n.toLocaleString()+'件の資料で見つかりました（本文の'+np.toLocaleString()+'ページ）'):(n.toLocaleString()+'件の資料');
   const part=rows.slice(page*PER,page*PER+PER);
   $('res').innerHTML=part.map(({i,hits,tm})=>{
     const d=D[i];
