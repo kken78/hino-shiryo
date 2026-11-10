@@ -40,7 +40,7 @@ CATS = [
     ("koho", "広報ひの"),
 ]
 CAT_NAME = dict(CATS)
-ARCHIVE = "Webアーカイブ"  # 台帳の note にこの字があれば、町のサイトから外された資料とみなす（DESIGN.md ADR-4）
+ARCHIVE = "Webアーカイブ"  # 計画の原典の台帳の note にこの字があれば、判断の付いていない外された資料とみなす（DESIGN.md ADR-4）
 
 errors = []
 
@@ -117,8 +117,11 @@ def town_docs(repo):
         d = {"id": r["id"], "cc": r["category"], "y": r["fiscal_year"], "d": r["date"], "t": r["title"],
              "u": r["url"], "fmt": r["format"], "b": int(r["bytes"] or 0), "pages": [], "labels": None,
              "sha": r["sha256"]}
-        if ARCHIVE in r["note"]:
-            d["k"] = "gone"
+        if "removed" not in r:
+            err("hino-town-docs の台帳に removed の列が無い（DOCS_SCHEMA.md §4 の前の版。inputs.lock.json を上げる）")
+            return []
+        if r["removed"] and r["removed_judgment"] != "replaced":
+            d["k"] = "gone"                     # withheld か、まだ判断していない（ADR-4）
         elif r["check"] == "image" or r["text_method"] == "none":
             d["k"] = "image"
         else:
@@ -151,6 +154,9 @@ def town_docs(repo):
                         labels.append(f"シート「{s['シートの名前']}」")
                         pages.append(norm("\n".join(parts)))
                     d["pages"], d["labels"] = pages, labels
+        if r["removed"] and d["k"] != "gone":
+            d["r"] = r["removed"]               # replaced：本文を探し、リンクは保存版（空なら無し）
+            d["u"] = r["archive_url"]
         docs.append(d)
     return docs
 
@@ -243,7 +249,7 @@ def main(argv):
     meta = []
     for d in docs:
         m = {"c": d["cc"], "t": d["t"], "u": d["u"], "f": d["fmt"], "b": d["b"], "k": d["k"]}
-        for a in ("sub", "y", "d"):
+        for a in ("sub", "y", "d", "r"):
             if d.get(a):
                 m[a] = d[a]
         if d["k"] == "text":

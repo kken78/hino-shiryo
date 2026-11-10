@@ -69,7 +69,8 @@ main{padding-bottom:var(--portal-sp3)}
 .doc .sub{font-weight:400}
 .meta{font-size:var(--portal-fs-sub);color:var(--portal-muted);margin:0 0 4px}
 .hit{font-size:var(--portal-fs-sub);margin:4px 0 0;overflow-wrap:anywhere}
-.hit a{color:var(--portal-ai);white-space:nowrap;margin-right:var(--portal-sp1)}
+.hit a,.hit .pl{color:var(--portal-ai);white-space:nowrap;margin-right:var(--portal-sp1)}
+.hit .pl{color:var(--portal-muted)}
 mark{background:#FFE58A;color:inherit;padding:0 1px}
 .pager{display:flex;gap:var(--portal-sp1);align-items:center;flex-wrap:wrap;margin-top:var(--portal-sp2);font-size:var(--portal-fs-sub)}
 .pager button{font-size:var(--portal-fs-sub);padding:6px 12px;border:1px solid var(--portal-ai);background:#fff;color:var(--portal-ai);border-radius:4px;cursor:pointer;font-family:inherit}
@@ -190,6 +191,7 @@ function snip(t){
   return (s>0?'…':'')+x+(e<t.length?'…':'');
 }
 function link(d,j){
+  if(!d.u)return '';
   if(d.f==='pdf')return d.u+'#page='+(j+1);
   return d.u;
 }
@@ -201,13 +203,14 @@ function show(){
   $('res').innerHTML=part.map(({i,hits,tm})=>{
     const d=D[i];
     const ttl=esc(d.t)+(d.sub?'<span class="sub">　'+esc(d.sub)+'</span>':'');
-    const head=d.k==='gone'?ttl:'<a href="'+esc(d.u)+'">'+ttl+'</a>';
+    const head=(d.k==='gone'||!d.u)?ttl:'<a href="'+esc(d.u)+'">'+ttl+'</a>';
     const meta=[CN[d.c],d.y?d.y+'年度':'',d.d||'',(FMT[d.f]||d.f)+(d.b?' '+fmtB(d.b):'')];
     if(d.k==='image')meta.push('画像だけの資料のため、本文では探せません');
     if(d.k==='gone')meta.push('町のサイトから外された資料のため、本文は探す対象にしていません');
+    if(d.r)meta.push('町のサイトから外された資料（'+d.r+' に確認）。'+(d.u?'リンク先は Webアーカイブの保存版':'保存版が無いのでリンクはありません'));
     let h='<div class="doc"><h2>'+head+'</h2><p class="meta">'+meta.filter(Boolean).map(esc).join('　')+'</p>';
     if(words.length&&!hits.length&&tm)h+='<p class="hit">題に見つかりました</p>';
-    h+=hits.slice(0,3).map(j=>'<p class="hit"><a href="'+esc(link(d,j))+'">'+esc(label(d,j))+'</a>'+snip(T[i][j])+'</p>').join('');
+    h+=hits.slice(0,3).map(j=>'<p class="hit">'+(d.u?'<a href="'+esc(link(d,j))+'">'+esc(label(d,j))+'</a>':'<span class="pl">'+esc(label(d,j))+'</span>')+snip(T[i][j])+'</p>').join('');
     if(hits.length>3){const more=hits.slice(3,33);h+='<p class="hit">ほかに '+more.map(j=>'<a href="'+esc(link(d,j))+'">'+esc(label(d,j))+'</a>').join('')+(hits.length>33?'ほか '+(hits.length-33)+'ページ':'')+'</p>';}
     return h+'</div>';
   }).join('');
