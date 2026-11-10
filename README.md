@@ -15,9 +15,28 @@
 
 材料の版は `inputs.lock.json` で決める（リポジトリごとに commit を1つ）。
 
+## ファイル
+
+| ファイル | 中身 |
+|---|---|
+| index.html | 検索のページ。`data/` を `<script>` で読む（ファイルとして開いても動く） |
+| data/index.js | 資料の一覧（分類・年度・日付・題・URL・形式・大きさ・ページ数）と、本文のファイルの一覧。道具が作る |
+| data/t-<名前>.js | ページごとの本文の文字（探すための形。DESIGN.md ADR-2）。計画と、年ごとに分け、1.5MB を目安にさらに分ける。道具が作る |
+| inputs.lock.json | 材料のリポジトリと commit |
+| tools/build_data.py | 材料から `data/` を作る道具 |
+
 ## 作り直し方
 
-道具とデータは、次の PR で足す。
+材料のリポジトリ（hino-town-docs と shiga-hino-plans）を、このリポジトリと同じフォルダに置き、`inputs.lock.json` の commit を取得しておく（`git fetch`）。道具は、作業ツリーでなく、その commit の中身を git から読む。
+
+```bash
+python3 tools/build_data.py            # 材料が隣のフォルダにあるとき
+python3 tools/build_data.py --src <材料を並べたフォルダ>
+```
+
+台帳のページ数と原典の文字を改ページで分けた数が合わないなど、決まりに合わないものが1つでもあれば、`data/` は書き出されず、終了コード 1 で止まる。材料の版を上げるときは、`inputs.lock.json` の commit を直して道具を実行し、`inputs.lock.json` と `data/` を同じコミットに入れる。
+
+PR と main への push のたびに、GitHub Actions（`.github/workflows/check.yml`）が lock の commit の材料で道具を実行し、`data/` がコミットされたものと一致するかを確かめる。あわせて、hino-portal の共通の部品の検査（`shared/check.py`・`shared/check_mobile.mjs`）を走らせる。
 
 ## 町のサイトから外された資料
 

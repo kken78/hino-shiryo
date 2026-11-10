@@ -1,0 +1,7 @@
+{
+  "note": "tools/build_data.py が読む材料。リポジトリごとに commit を1つ決め、その commit の中身を git から読む。2026-11-10 に、各リポジトリの main の HEAD で固定した。",
+  "inputs": [
+    {"repo": "kken78/hino-town-docs", "commit": "a5835f78228192e85f3ad234622bd21f7b70ce61", "paths": ["data/sources.tsv", "data/text/"]},
+    {"repo": "kken78/shiga-hino-plans", "commit": "5e2d38e562e8d725f4b120ef50cec94ce95e00e9", "paths": ["data/manifest.json", "data/sources_index.tsv", "data/text/"]}
+  ]
+}

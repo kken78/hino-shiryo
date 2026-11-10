@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>町の資料の検索｜日野町データポータル（非公式）</title>
+<meta name="description" content="日野町のサイトに公開されている資料（計画、予算・決算、財政、広報ひの、審議会、記者会見など）の本文から、言葉で資料とページを探します。非公式。">
+<!-- portal-shared:css start --><style>/* 日野町データポータル 共通の部品（見出し・ナビ・ページの見出し・フッター）。
+   正本は hino-portal/shared/shell.css。各ページはこれを <style> に写し、CI で同じであることを確かめる（DESIGN.md 9.1）。
+   文字の大きさは --portal-fs-sub 14px・--portal-fs 16px・--portal-fs-h1 18px・--portal-fs-h3 20px・--portal-fs-h2 24px の5段階だけ（DESIGN.md 5.2）。色は 3章の藍と朱。書体は端末のもの（5.1）。
+   --portal-cat1〜5 はグラフの区別の色（3.4）、--portal-pillar1〜5（面）と --portal-pillar1-ink〜5-ink（文字）は第6次総合計画の政策の柱の色（3.6）。 */
+:root{--portal-ai:#1E4E9C;--portal-ai-ink:#0C2547;--portal-shu:#C33D2E;--portal-bg:#EFF3F9;--portal-card:#FFFFFF;--portal-ink:#1A2333;--portal-muted:#5B6B85;--portal-line:#DCE4F0;--portal-foot-bg:#0C2547;--portal-foot-ink:#C9D6EA;--portal-cat1:#3460FB;--portal-cat2:#AC3E00;--portal-cat3:#197A4B;--portal-cat4:#008299;--portal-cat5:#767676;--portal-pillar1:#E72F5C;--portal-pillar2:#E36800;--portal-pillar3:#639B22;--portal-pillar4:#009AB4;--portal-pillar5:#3F51A2;--portal-pillar1-ink:#D91948;--portal-pillar2-ink:#B45300;--portal-pillar3-ink:#4F7B1B;--portal-pillar4-ink:#007A8F;--portal-pillar5-ink:#3F51A2;--portal-fs:16px;--portal-fs-sub:14px;--portal-fs-h1:18px;--portal-fs-h2:24px;--portal-fs-num:32px;--portal-fs-h3:20px;--portal-sp1:8px;--portal-sp2:16px;--portal-sp3:24px;--portal-sp4:40px;--portal-font:"Hiragino Sans","Hiragino Kaku Gothic ProN","BIZ UDPGothic","Yu Gothic Medium","Yu Gothic","Noto Sans CJK JP","Noto Sans JP",Meiryo,system-ui,sans-serif}
+.portal-wrap{max-width:1080px;margin:0 auto;padding:0 var(--portal-sp2);box-sizing:border-box}
+.portal-head,.portal-page,.portal-foot{font-family:var(--portal-font);font-size:var(--portal-fs);line-height:1.7;letter-spacing:.02em}
+.portal-head *,.portal-page *,.portal-foot *{box-sizing:border-box}
+.portal-head a:focus-visible,.portal-page a:focus-visible,.portal-foot a:focus-visible{outline:2px solid #000;box-shadow:0 0 0 4px #FFD43D;outline-offset:1px}
+/* 共通の見出し（2.2 の 1、2.3） */
+.portal-head{background:var(--portal-card);border-bottom:1px solid var(--portal-line);color:var(--portal-ink)}
+.portal-head .portal-wrap{display:flex;flex-wrap:wrap;align-items:center;gap:var(--portal-sp1) var(--portal-sp3);padding-top:var(--portal-sp1);padding-bottom:var(--portal-sp1)}
+.portal-brand{display:flex;align-items:center;gap:var(--portal-sp1);text-decoration:none;color:var(--portal-ink)}
+.portal-brand svg{width:26px;height:26px;flex:none}
+.portal-brand .portal-name{font-size:var(--portal-fs-h1);margin:0;font-weight:700;line-height:1.3}
+.portal-brand .portal-tag{font-size:var(--portal-fs-sub);color:var(--portal-muted);border:1px solid var(--portal-line);border-radius:3px;padding:0 6px;line-height:1.6}
+.portal-areas{display:flex;gap:var(--portal-sp2);margin-left:auto}
+.portal-areas a{font-size:var(--portal-fs-sub);text-decoration:none;color:var(--portal-ai);padding:4px 0;border-bottom:2px solid transparent;white-space:nowrap}
+.portal-areas a:hover{text-decoration:underline}
+.portal-areas a[aria-current]{color:var(--portal-ink);border-bottom-color:var(--portal-shu);font-weight:700}
+@media (max-width:767px){.portal-areas{margin-left:0;width:100%;overflow-x:auto}}
+/* ページの見出し（2.2 の 2・3） */
+.portal-page{padding:var(--portal-sp3) 0 var(--portal-sp2);color:var(--portal-ink)}
+.portal-page .portal-area{font-size:var(--portal-fs-sub);color:var(--portal-muted);margin:0 0 4px}
+.portal-page .portal-title{font-size:var(--portal-fs-h2);margin:0 0 4px;line-height:1.35;font-weight:700}
+.portal-page .portal-lead{margin:0 0 4px}
+.portal-page .portal-asof{font-size:var(--portal-fs-sub);color:var(--portal-muted);margin:0}
+.portal-siblings{font-size:var(--portal-fs-sub);margin:var(--portal-sp2) 0 0;display:flex;flex-wrap:wrap;gap:4px 0}
+.portal-siblings span,.portal-siblings a{padding-right:var(--portal-sp2)}
+.portal-siblings a{color:var(--portal-ai)}
+.portal-siblings span[aria-current]{font-weight:700;color:var(--portal-ink)}
+.portal-siblings .portal-lbl{color:var(--portal-muted)}
+/* フッター（2.5） */
+.portal-foot{margin-top:var(--portal-sp4);background:var(--portal-foot-bg);color:var(--portal-foot-ink);padding:var(--portal-sp3) 0 var(--portal-sp4);font-size:var(--portal-fs-sub)}
+.portal-foot a{color:#fff}
+.portal-foot dl{margin:0;display:grid;grid-template-columns:10em 1fr;gap:var(--portal-sp1) var(--portal-sp2)}
+.portal-foot dt{color:#fff;font-weight:700;margin:0}
+.portal-foot dd{margin:0}
+.portal-foot p{margin:0 0 4px}
+.portal-foot ul{margin:0;padding-left:1.2em}
+@media (max-width:767px){.portal-foot dl{grid-template-columns:1fr;gap:4px}.portal-foot dt{margin-top:var(--portal-sp1)}}
+</style><!-- portal-shared:css end -->
+<style>
+body{margin:0;background:var(--portal-bg);color:var(--portal-ink);font-family:var(--portal-font);font-size:var(--portal-fs);line-height:1.7}
+main{padding-bottom:var(--portal-sp3)}
+.portal-page .portal-asof a{color:var(--portal-ai)}
+.box{background:var(--portal-card);border:1px solid var(--portal-line);border-radius:6px;padding:var(--portal-sp2);margin-bottom:var(--portal-sp2)}
+.q{display:flex;flex-wrap:wrap;gap:var(--portal-sp1);align-items:center}
+.q input[type=search]{flex:1 1 320px;min-width:0;font-size:var(--portal-fs);padding:8px 10px;border:1px solid var(--portal-muted);border-radius:4px;font-family:inherit}
+.q select{font-size:var(--portal-fs);padding:8px;border:1px solid var(--portal-muted);border-radius:4px;font-family:inherit;background:#fff;color:var(--portal-ink);max-width:100%}
+.q button{font-size:var(--portal-fs);padding:8px 16px;border:0;border-radius:4px;background:var(--portal-ai);color:#fff;font-family:inherit;cursor:pointer}
+.q input:focus-visible,.q select:focus-visible,.q button:focus-visible,.pager button:focus-visible,main a:focus-visible{outline:2px solid #000;box-shadow:0 0 0 4px #FFD43D;outline-offset:1px}
+.note{font-size:var(--portal-fs-sub);color:var(--portal-muted);margin:var(--portal-sp1) 0 0}
+.load{font-size:var(--portal-fs-sub);color:var(--portal-muted);margin:0 0 var(--portal-sp1)}
+.count{margin:0 0 var(--portal-sp1);font-weight:700}
+.sort{font-size:var(--portal-fs-sub);margin:0 0 var(--portal-sp1)}
+.sort select{font-size:var(--portal-fs-sub);padding:4px;border:1px solid var(--portal-muted);border-radius:4px;font-family:inherit;background:#fff;color:var(--portal-ink)}
+.doc{border-top:1px solid var(--portal-line);padding:var(--portal-sp2) 0}
+.doc:first-child{border-top:0;padding-top:0}
+.doc h2{font-size:var(--portal-fs);margin:0 0 4px;font-weight:700;line-height:1.5}
+.doc h2 a{color:var(--portal-ai)}
+.doc .sub{font-weight:400}
+.meta{font-size:var(--portal-fs-sub);color:var(--portal-muted);margin:0 0 4px}
+.hit{font-size:var(--portal-fs-sub);margin:4px 0 0;overflow-wrap:anywhere}
+.hit a{color:var(--portal-ai);white-space:nowrap;margin-right:var(--portal-sp1)}
+mark{background:#FFE58A;color:inherit;padding:0 1px}
+.pager{display:flex;gap:var(--portal-sp1);align-items:center;flex-wrap:wrap;margin-top:var(--portal-sp2);font-size:var(--portal-fs-sub)}
+.pager button{font-size:var(--portal-fs-sub);padding:6px 12px;border:1px solid var(--portal-ai);background:#fff;color:var(--portal-ai);border-radius:4px;cursor:pointer;font-family:inherit}
+.pager button:disabled{opacity:.4;cursor:default}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+</style>
+</head>
+<body>
+<!-- portal-shared:header start -->
+<header class="portal-head"><div class="portal-wrap">
+<a class="portal-brand" href="https://kken78.github.io/hino-portal/"><svg viewBox="0 0 26 26" aria-hidden="true"><rect x="1" y="14" width="24" height="4" rx="2" fill="#1E4E9C"/><rect x="4" y="8" width="18" height="4" rx="2" fill="#3B6FBF"/><rect x="8" y="2" width="10" height="4" rx="2" fill="#C33D2E"/></svg><span class="portal-name">日野町データポータル</span><span class="portal-tag">非公式</span></a>
+<nav class="portal-areas" aria-label="分野"><a href="https://kken78.github.io/hino-portal/">トップ</a><a href="https://kken78.github.io/hino-portal/#g-plan">計画と予算</a><a href="https://kken78.github.io/hino-portal/#g-stat">統計とくらし</a><a href="https://kken78.github.io/hino-portal/#g-council">議会</a></nav>
+</div></header>
+<!-- portal-shared:header end -->
+<div class="portal-page"><div class="portal-wrap">
+<p class="portal-area">資料</p>
+<h1 class="portal-title">町の資料の検索</h1>
+<p class="portal-lead">日野町のサイトに公開されている資料（計画、予算・決算、財政、広報ひの、審議会、記者会見など）<span id="ndocs"></span>件の本文から、言葉で資料とページを探します。ページの番号を押すと、町のサイトの PDF がそのページで開きます。</p>
+<p class="portal-asof">材料の版：<span id="asof">2026年11月10日</span>。会議録は<a href="https://kken78.github.io/hino-council-search/">会議録 横断検索</a>で探します。</p>
+</div></div>
+<main class="portal-wrap">
+<div class="box">
+<form class="q" id="f" role="search">
+<label class="sr" for="w">探す言葉</label><input type="search" id="w" placeholder="例　地域公共交通" autocomplete="off">
+<label class="sr" for="c">分類</label><select id="c"><option value="">すべての分類</option></select>
+<label class="sr" for="y">年度</label><select id="y"><option value="">すべての年度</option></select>
+<button>探す</button>
+</form>
+<p class="note">空白で区切ると、すべての言葉を含むページを探します。全角と半角、改行の位置の違いは無視して探します。本文の文字は PDF から機械で取り出したもので、読み取りの誤りや欠けがあることがあります。画像だけの資料（<span id="nimg"></span>件）は、本文では探せません。計画には年度を付けていないので、年度で絞ると計画は出ません。</p>
+</div>
+<div class="box">
+<p class="load" id="load" aria-live="polite"></p>
+<p class="count" id="cnt" aria-live="polite"></p>
+<p class="sort"><label for="o">並び</label>　<select id="o"><option value="hit">見つかったページの多い順</option><option value="new">新しい順</option></select></p>
+<div id="res"></div>
+<div class="pager" id="pg"></div>
+</div>
+</main>
+<!-- portal-shared:footer start -->
+<footer class="portal-foot"><div class="portal-wrap">
+<dl>
+<dt>このページについて</dt><dd><p>このページは、滋賀県日野町 政策参与の東健二郎が、個人として作成した試作です。日野町の公式のサイトではなく、町の見解を示すものでもありません。</p><p>町のサイトの資料から機械で取り出した本文の文字を、ページごとに分けて探せるようにしています。結果の前後の文は、全角と半角をそろえ、空白と改行を除いた形で出しています。</p></dd>
+<dt>出典</dt><dd>日野町ホームページに公開されている資料（PDF・Excel・ページ）。資料の一覧と取り出した文字は <a href="https://github.com/kken78/hino-town-docs">hino-town-docs</a>（計画は <a href="https://github.com/kken78/shiga-hino-plans">shiga-hino-plans</a>）にあります。各資料へのリンクは結果にあります。</dd>
+<dt>資料の時点</dt><dd>材料の版は2026年11月10日に固定しました。資料ごとの取得日は hino-town-docs と shiga-hino-plans の台帳にあります。町のサイトから外された資料は、本文を探す対象にしていません。</dd>
+<dt>注意</dt><dd><p>内容の正確性を保証するものではありません。最新・正確な情報は日野町の公式ページでご確認ください。</p></dd>
+<dt>データ</dt><dd><a href="https://github.com/kken78/hino-shiryo/tree/main/data">data/</a>（画面用。材料から作ったもの）、<a href="https://github.com/kken78/hino-shiryo/blob/main/inputs.lock.json">inputs.lock.json</a>（材料の版）</dd>
+<dt>ソースコード</dt><dd><a href="https://github.com/kken78/hino-shiryo">kken78/hino-shiryo</a>（GitHub）</dd>
+<dt>ライセンス</dt><dd>コードは MIT License。データの構造は CC BY 4.0。資料の題と本文の文字は日野町など各資料の発行者の著作物で、このリポジトリのライセンスの対象外です。</dd>
+</dl>
+</div></footer>
+<!-- portal-shared:footer end -->
+<script src="data/index.js"></script>
+<script>
+(function(){
+const S=window.SHIRYO,D=S.docs,T={},PER=20;
+const $=id=>document.getElementById(id);
+const nz=s=>s.normalize('NFKC').replace(/\s+/g,'');
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+const CN=Object.fromEntries(S.cats);
+const fmtB=b=>b>=1e6?(b/1e6).toFixed(1)+'MB':Math.max(1,Math.round(b/1e3))+'KB';
+const FMT={pdf:'PDF',xlsx:'Excel',html:'ページ'};
+const yearOf=d=>d.y||'';
+$('ndocs').textContent=D.length.toLocaleString();
+$('nimg').textContent=D.filter(d=>d.k==='image').length;
+S.cats.forEach(([c,n])=>{if(D.some(d=>d.c===c))$('c').add(new Option(n,c));});
+[...new Set(D.map(yearOf).filter(Boolean))].sort().reverse().forEach(y=>$('y').add(new Option(y+'年度',y)));
+
+let loaded=0,rows=[],page=0,words=[],timer=null;
+function setLoad(){const n=S.shards.length;$('load').textContent=loaded<n?('本文を読み込んでいます（'+loaded+' / '+n+'）。読み込み中の結果は途中のものです。'):'';}
+function loadNext(){
+  if(loaded>=S.shards.length){setLoad();if(words.length)run(false);return;}
+  const name=S.shards[loaded],sc=document.createElement('script');
+  sc.src='data/t-'+name+'.js';
+  sc.onload=()=>{Object.assign(T,window.SHIRYO_T[name]);delete window.SHIRYO_T[name];loaded++;setLoad();
+    if(words.length){clearTimeout(timer);timer=setTimeout(()=>run(false),300);}loadNext();};
+  sc.onerror=()=>{$('load').textContent='本文のファイル '+name+' を読み込めませんでした。ページを読み込み直してください。';};
+  document.body.appendChild(sc);
+}
+
+function readState(){
+  const h=new URLSearchParams(location.hash.slice(1));
+  $('w').value=h.get('q')||'';$('c').value=h.get('c')||'';$('y').value=h.get('y')||'';$('o').value=h.get('o')==='new'?'new':'hit';
+  page=Math.max(0,(+h.get('p')||1)-1);
+}
+function writeState(){
+  const h=new URLSearchParams();
+  if($('w').value.trim())h.set('q',$('w').value.trim());
+  if($('c').value)h.set('c',$('c').value);
+  if($('y').value)h.set('y',$('y').value);
+  if($('o').value==='new')h.set('o','new');
+  if(page)h.set('p',page+1);
+  const s=h.toString();history.replaceState(null,'',s?'#'+s:location.pathname+location.search);
+}
+const dkey=d=>(d.d||d.y||'');
+function run(resetPage){
+  words=$('w').value.split(/[\s　]+/).map(nz).filter(Boolean);
+  const c=$('c').value,y=$('y').value;rows=[];
+  D.forEach((d,i)=>{
+    if(c&&d.c!==c)return; if(y&&yearOf(d)!==y)return;
+    if(!words.length){rows.push({i,hits:[],tm:false});return;}
+    const title=nz(d.t+(d.sub||''));
+    const tm=words.every(w=>title.includes(w));
+    const hits=[];const p=T[i];
+    if(p)p.forEach((t,j)=>{if(words.every(w=>t.includes(w)))hits.push(j);});
+    if(hits.length||tm)rows.push({i,hits,tm});
+  });
+  if(words.length&&$('o').value==='hit')rows.sort((a,b)=>b.hits.length-a.hits.length||(b.tm-a.tm)||dkey(D[b.i]).localeCompare(dkey(D[a.i])));
+  else rows.sort((a,b)=>dkey(D[b.i]).localeCompare(dkey(D[a.i]))||a.i-b.i);
+  if(resetPage)page=0;
+  const last=Math.max(0,Math.ceil(rows.length/PER)-1);if(page>last)page=last;
+  show();writeState();
+}
+function snip(t){
+  const w=words[0],i=t.indexOf(w),s=Math.max(0,i-30),e=Math.min(t.length,i+w.length+50);
+  let x=esc(t.slice(s,e));
+  [...words].sort((a,b)=>b.length-a.length).forEach(w=>{const ew=esc(w);x=x.split(ew).join('\u0001'+ew+'\u0002');});
+  x=x.replace(/\u0001/g,'<mark>').replace(/\u0002/g,'</mark>');
+  return (s>0?'…':'')+x+(e<t.length?'…':'');
+}
+function link(d,j){
+  if(d.f==='pdf')return d.u+'#page='+(j+1);
+  return d.u;
+}
+function label(d,j){return d.l?d.l[j]:(j+1)+'ページ';}
+function show(){
+  const n=rows.length,np=rows.reduce((a,r)=>a+r.hits.length,0);
+  $('cnt').textContent=words.length?(n.toLocaleString()+'件の資料に見つかりました（本文 '+np.toLocaleString()+'ページ）'):(n.toLocaleString()+'件の資料');
+  const part=rows.slice(page*PER,page*PER+PER);
+  $('res').innerHTML=part.map(({i,hits,tm})=>{
+    const d=D[i];
+    const ttl=esc(d.t)+(d.sub?'<span class="sub">　'+esc(d.sub)+'</span>':'');
+    const head=d.k==='gone'?ttl:'<a href="'+esc(d.u)+'">'+ttl+'</a>';
+    const meta=[CN[d.c],d.y?d.y+'年度':'',d.d||'',(FMT[d.f]||d.f)+(d.b?' '+fmtB(d.b):'')];
+    if(d.k==='image')meta.push('画像だけの資料のため、本文では探せません');
+    if(d.k==='gone')meta.push('町のサイトから外された資料のため、本文は探す対象にしていません');
+    let h='<div class="doc"><h2>'+head+'</h2><p class="meta">'+meta.filter(Boolean).map(esc).join('　')+'</p>';
+    if(words.length&&!hits.length&&tm)h+='<p class="hit">題に見つかりました</p>';
+    h+=hits.slice(0,3).map(j=>'<p class="hit"><a href="'+esc(link(d,j))+'">'+esc(label(d,j))+'</a>'+snip(T[i][j])+'</p>').join('');
+    if(hits.length>3){const more=hits.slice(3,33);h+='<p class="hit">ほかに '+more.map(j=>'<a href="'+esc(link(d,j))+'">'+esc(label(d,j))+'</a>').join('')+(hits.length>33?'ほか '+(hits.length-33)+'ページ':'')+'</p>';}
+    return h+'</div>';
+  }).join('');
+  const last=Math.max(0,Math.ceil(n/PER)-1);
+  $('pg').innerHTML=n>PER?'<button type="button" '+(page?'':'disabled')+' data-p="-1">前の20件</button><span>'+(page+1)+' / '+(last+1)+'</span><button type="button" '+(page<last?'':'disabled')+' data-p="1">次の20件</button>':'';
+}
+$('pg').addEventListener('click',e=>{const p=e.target.dataset&&e.target.dataset.p;if(p){page+=+p;show();writeState();$('cnt').scrollIntoView();}});
+$('f').addEventListener('submit',e=>{e.preventDefault();run(true);});
+$('c').addEventListener('change',()=>run(true));
+$('y').addEventListener('change',()=>run(true));
+$('o').addEventListener('change',()=>run(true));
+readState();setLoad();run(false);loadNext();
+})();
+</script>
+</body>
+</html>

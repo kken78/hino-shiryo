@@ -1,0 +1,85 @@
+# 検索のデータの作り直しの確認と、共通の部品の検査。
+# プルリクエストと main への push のたびに、inputs.lock.json の commit の材料で tools/build_data.py を実行し、
+# 作り直した data/ がコミットされたものと一致するかを確かめる。
+# 材料は hino-town-docs と shiga-hino-plans。道具は commit の中身を git から読むので、取り出しは commit を1つ取れればよい。
+name: check
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      # 材料のリポジトリを隣のフォルダに置くため、このリポジトリも1段下に置く
+      - uses: actions/checkout@v7
+        with:
+          path: hino-shiryo
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: inputs.lock.json から材料の commit を読む
+        id: lock
+        working-directory: hino-shiryo
+        run: |
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import json, sys
+          lock = json.load(open('inputs.lock.json', encoding='utf-8'))
+          commits = {i['repo']: i['commit'] for i in lock['inputs']}
+          need = ['kken78/hino-town-docs', 'kken78/shiga-hino-plans']
+          missing = [r for r in need if r not in commits]
+          if missing:
+              sys.exit(f'inputs.lock.json に無いリポジトリ: {missing}')
+          print('towndocs=' + commits['kken78/hino-town-docs'])
+          print('plans=' + commits['kken78/shiga-hino-plans'])
+          PY
+
+      - uses: actions/checkout@v7
+        with:
+          repository: kken78/hino-town-docs
+          ref: ${{ steps.lock.outputs.towndocs }}
+          path: hino-town-docs
+
+      - uses: actions/checkout@v7
+        with:
+          repository: kken78/shiga-hino-plans
+          ref: ${{ steps.lock.outputs.plans }}
+          path: shiga-hino-plans
+
+      - name: 材料の検算と data/ の作り直し（build_data.py）
+        working-directory: hino-shiryo
+        run: python3 tools/build_data.py --src "$GITHUB_WORKSPACE"
+
+      - name: data/ がコミットされたものと一致するか
+        working-directory: hino-shiryo
+        run: |
+          git add -N data
+          if ! git diff --exit-code --stat -- data; then
+            echo "::error::data/ が材料から作り直した結果と一致しません。python3 tools/build_data.py を実行してコミットしてください。"
+            exit 1
+          fi
+
+      - name: 共通の部品と文字の大きさ（hino-portal の shared/check.py）
+        working-directory: hino-shiryo
+        run: |
+          git clone --depth 1 https://github.com/kken78/hino-portal.git /tmp/hino-portal
+          python3 /tmp/hino-portal/shared/check.py --fonts --hyoki index.html
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+
+      - name: 実ブラウザでの文字の大きさと横のはみ出し（hino-portal の shared/check_mobile.mjs）
+        run: |
+          mkdir -p /tmp/pw && cd /tmp/pw
+          npm install --no-save --no-package-lock playwright@1.49.1
+          npx playwright install --with-deps chromium
+          cd "$GITHUB_WORKSPACE/hino-shiryo"
+          PLAYWRIGHT_MODULE=/tmp/pw/node_modules/playwright/index.mjs node /tmp/hino-portal/shared/check_mobile.mjs index.html
