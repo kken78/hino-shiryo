@@ -72,6 +72,9 @@ main{padding-bottom:var(--portal-sp3)}
 .doc h2{font-size:var(--portal-fs);margin:0 0 4px;font-weight:700;line-height:1.5}
 .doc h2 a{color:var(--portal-ai)}
 .doc .sub{font-weight:400}
+.kiji{margin:0 0 4px;padding-left:1.2em;font-size:var(--portal-fs-sub)}
+.kiji li{margin:0}
+.kiji li.on{font-weight:700}
 .meta{font-size:var(--portal-fs-sub);color:var(--portal-muted);margin:0 0 4px}
 .hit{font-size:var(--portal-fs-sub);margin:4px 0 0;overflow-wrap:anywhere}
 .hit a,.hit .pl{color:var(--portal-ai);white-space:nowrap;margin-right:var(--portal-sp1)}
@@ -171,14 +174,17 @@ function writeState(){
   const s=h.toString();history.replaceState(null,'',s?'#'+s:location.pathname+location.search);
 }
 const dkey=d=>(d.d||d.y||'');
+// 題を見出しに分ける。広報ひのは「／」でつないだ記事の見出し（ADR-7）。ほかは題と副題を1つに
+const heads=d=>d.c==='koho'?d.t.split('／').map(x=>x.trim()).filter(Boolean):[d.t+(d.sub||'')];
+const kohoName=d=>{const m=/^(\d{4})-(\d{2})/.exec(d.d||'');return '広報ひの '+(m?(+m[1])+'年'+(+m[2])+'月号':'')+(d.no?'（No.'+d.no+'）':'');};
+function hl(t){let x=esc(t);[...words].sort((a,b)=>b.length-a.length).forEach(w=>{const ew=esc(w);x=x.split(ew).join('\u0001'+ew+'\u0002');});return x.replace(/\u0001/g,'<mark>').replace(/\u0002/g,'</mark>');}
 function run(resetPage){
   words=$('w').value.split(/[\s　]+/).map(nz).filter(Boolean);
   const c=$('c').value,y=$('y').value,o=$('o').value;const all=[];
   D.forEach((d,i)=>{
     if(y&&yearOf(d)!==y)return;
     if(!words.length){all.push({i,hits:[],tm:false});return;}
-    const title=nz(d.t+(d.sub||''));
-    const tm=words.every(w=>title.includes(w));
+    const tm=heads(d).some(t=>{const x=nz(t);return words.every(w=>x.includes(w));});
     const hits=[];const p=T[i];
     if(p)p.forEach((t,j)=>{if(words.every(w=>t.includes(w)))hits.push(j);});
     if(hits.length||tm)all.push({i,hits,tm});
@@ -190,10 +196,10 @@ function run(resetPage){
   rows=c?all.filter(r=>D[r.i].c===c):all;
   const newer=(a,b)=>dkey(D[b.i]).localeCompare(dkey(D[a.i]))||a.i-b.i;
   if(words.length&&o==='pages')rows.sort((a,b)=>b.hits.length-a.hits.length||newer(a,b));
-  else if(words.length&&o==='title')rows.sort((a,b)=>(b.tm-a.tm)||newer(a,b));
+  else if(words.length&&o==='title')rows.sort((a,b)=>(b.tm-a.tm)||(a.tm&&((D[a.i].c==='koho')-(D[b.i].c==='koho')))||newer(a,b));
   else rows.sort(newer);
   $('onote').textContent=!words.length?'言葉を入れないときは、新しい順に並べます。':
-    o==='title'?'題に言葉を含む資料を先に、それぞれ新しい順に並べます。':
+    o==='title'?'題に言葉を含む資料を先に並べます（広報ひのは記事の見出しで見て、ほかの資料のあとに置きます）。それぞれ新しい順です。':
     o==='pages'?'言葉を含むページの多い資料から並べます。長い資料が上に来やすくなります。':'日付（無ければ年度）の新しい順に並べます。';
   if(resetPage)page=0;
   const last=Math.max(0,Math.ceil(rows.length/PER)-1);if(page>last)page=last;
@@ -218,14 +224,16 @@ function show(){
   const part=rows.slice(page*PER,page*PER+PER);
   $('res').innerHTML=part.map(({i,hits,tm})=>{
     const d=D[i];
-    const ttl=esc(d.t)+(d.sub?'<span class="sub">　'+esc(d.sub)+'</span>':'');
+    const ttl=d.c==='koho'?esc(kohoName(d)):esc(d.t)+(d.sub?'<span class="sub">　'+esc(d.sub)+'</span>':'');
     const head=(d.k==='gone'||!d.u)?ttl:'<a href="'+esc(d.u)+'">'+ttl+'</a>';
     const meta=[CN[d.c],d.y?d.y+'年度':'',d.d||'',(FMT[d.f]||d.f)+(d.b?' '+fmtB(d.b):'')];
     if(d.k==='image')meta.push('画像だけの資料のため、本文では探せません');
     if(d.k==='gone')meta.push('町のサイトでの掲載が終わった資料のため、本文は探す対象にしていません');
     if(d.r)meta.push('町のサイトでの掲載が終わった資料（'+d.r+' に確認）。'+(d.u?'リンク先は Webアーカイブの保存版':'保存版が無いのでリンクはありません'));
-    let h='<div class="doc"><h2>'+head+'</h2><p class="meta">'+meta.filter(Boolean).map(esc).join('　')+'</p>';
-    if(words.length&&!hits.length&&tm)h+='<p class="hit">題に見つかりました</p>';
+    let h='<div class="doc"><h2>'+head+'</h2>';
+    if(d.c==='koho')h+='<ul class="kiji">'+heads(d).map(t=>{const x=nz(t),on=words.length&&words.every(w=>x.includes(w));return '<li'+(on?' class="on"':'')+'>'+(words.length?hl(t):esc(t))+'</li>';}).join('')+'</ul>';
+    h+='<p class="meta">'+meta.filter(Boolean).map(esc).join('　')+'</p>';
+    if(words.length&&!hits.length&&tm)h+='<p class="hit">'+(d.c==='koho'?'記事の見出しに見つかりました':'題に見つかりました')+'</p>';
     h+=hits.slice(0,3).map(j=>'<p class="hit">'+(d.u?'<a href="'+esc(link(d,j))+'">'+esc(label(d,j))+'</a>':'<span class="pl">'+esc(label(d,j))+'</span>')+snip(T[i][j])+'</p>').join('');
     if(hits.length>3){const more=hits.slice(3,33);h+='<p class="hit">ほかに '+more.map(j=>'<a href="'+esc(link(d,j))+'">'+esc(label(d,j))+'</a>').join('')+(hits.length>33?'ほか '+(hits.length-33)+'ページ':'')+'</p>';}
     return h+'</div>';

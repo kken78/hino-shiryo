@@ -117,6 +117,9 @@ def town_docs(repo):
         d = {"id": r["id"], "cc": r["category"], "y": r["fiscal_year"], "d": r["date"], "t": r["title"],
              "u": r["url"], "fmt": r["format"], "b": int(r["bytes"] or 0), "pages": [], "labels": None,
              "sha": r["sha256"]}
+        m = re.fullmatch(r"koho-no(\d+)-\d+", r["id"])
+        if m:
+            d["no"] = int(m.group(1))   # 広報ひのの号数（台帳の id による。DESIGN.md ADR-7）
         if "removed" not in r:
             err("hino-town-docs の台帳に removed の列が無い（DOCS_SCHEMA.md §4 の前の版。inputs.lock.json を上げる）")
             return []
@@ -249,7 +252,7 @@ def main(argv):
     meta = []
     for d in docs:
         m = {"c": d["cc"], "t": d["t"], "u": d["u"], "f": d["fmt"], "b": d["b"], "k": d["k"]}
-        for a in ("sub", "y", "d", "r"):
+        for a in ("sub", "y", "d", "r", "no"):
             if d.get(a):
                 m[a] = d[a]
         if d["k"] == "text":
