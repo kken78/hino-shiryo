@@ -127,7 +127,7 @@ mark{background:#FFE58A;color:inherit;padding:0 1px}
 <dt>注意</dt><dd><p>内容の正確性を保証するものではありません。最新・正確な情報は日野町の公式ページでご確認ください。</p></dd>
 <dt>データ</dt><dd><a href="https://github.com/kken78/hino-shiryo/tree/main/data">data/</a>（画面用。材料から作ったもの）、<a href="https://github.com/kken78/hino-shiryo/blob/main/inputs.lock.json">inputs.lock.json</a>（材料の版）</dd>
 <dt>ソースコード</dt><dd><a href="https://github.com/kken78/hino-shiryo">kken78/hino-shiryo</a>（GitHub）</dd>
-<dt>ライセンス</dt><dd>コードは MIT License。データの構造は CC BY 4.0。資料の題名と本文の文字は日野町など各資料の発行者の著作物で、このリポジトリのライセンスの対象外です。</dd>
+<dt>ライセンス</dt><dd>コードは MIT License。データの構造は CC BY 4.0。資料のタイトルと本文の文字は日野町など各資料の発行者の著作物で、このリポジトリのライセンスの対象外です。</dd>
 </dl>
 </div></footer>
 <!-- portal-shared:footer end -->
@@ -199,7 +199,7 @@ function run(resetPage){
   else if(words.length&&o==='title')rows.sort((a,b)=>(b.tm-a.tm)||(a.tm&&((D[a.i].c==='koho')-(D[b.i].c==='koho')))||newer(a,b));
   else rows.sort(newer);
   $('onote').textContent=!words.length?'言葉を入れないときは、新しい順に並べます。':
-    o==='title'?'探した言葉が題名にある資料を先に、そのあとは新しい順に並べます。広報ひのは記事の見出しで見て、ほかの資料のあとに置きます。':
+    o==='title'?'探した言葉が資料のタイトル（資料名）にあるものを先に、そのあとは新しい順に並べます。広報ひのは記事の見出しで見て、ほかの資料のあとに置きます。':
     o==='pages'?'探した言葉が出てくるページの多い資料から並べます。長い資料が上に来やすくなります。':'日付（無ければ年度）の新しい順に並べます。';
   if(resetPage)page=0;
   const last=Math.max(0,Math.ceil(rows.length/PER)-1);if(page>last)page=last;
@@ -233,7 +233,7 @@ function show(){
     let h='<div class="doc"><h2>'+head+'</h2>';
     if(d.c==='koho')h+='<ul class="kiji">'+heads(d).map(t=>{const x=nz(t),on=words.length&&words.every(w=>x.includes(w));return '<li'+(on?' class="on"':'')+'>'+(words.length?hl(t):esc(t))+'</li>';}).join('')+'</ul>';
     h+='<p class="meta">'+meta.filter(Boolean).map(esc).join('　')+'</p>';
-    if(words.length&&!hits.length&&tm)h+='<p class="hit">'+(d.c==='koho'?'記事の見出しに見つかりました':'題名に見つかりました')+'</p>';
+    if(words.length&&!hits.length&&tm)h+='<p class="hit">'+(d.c==='koho'?'記事の見出しに見つかりました':'タイトルに見つかりました')+'</p>';
     h+=hits.slice(0,3).map(j=>'<p class="hit">'+(d.u?'<a href="'+esc(link(d,j))+'">'+esc(label(d,j))+'</a>':'<span class="pl">'+esc(label(d,j))+'</span>')+snip(T[i][j])+'</p>').join('');
     if(hits.length>3){const more=hits.slice(3,33);h+='<p class="hit">ほかに '+more.map(j=>'<a href="'+esc(link(d,j))+'">'+esc(label(d,j))+'</a>').join('')+(hits.length>33?'ほか '+(hits.length-33)+'ページ':'')+'</p>';}
     return h+'</div>';
