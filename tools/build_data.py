@@ -40,7 +40,7 @@ CATS = [
     ("koho", "広報ひの"),
 ]
 CAT_NAME = dict(CATS)
-ARCHIVE = "Webアーカイブ"  # 計画の原典の台帳の note にこの字があれば、判断の付いていない外された資料とみなす（DESIGN.md ADR-4）
+ARCHIVE = "Webアーカイブ"  # 計画の原典の台帳の note にこの字があれば、掲載が終わり、まだ判断の付いていない資料とみなす（DESIGN.md ADR-4）
 
 errors = []
 
@@ -121,7 +121,7 @@ def town_docs(repo):
             err("hino-town-docs の台帳に removed の列が無い（DOCS_SCHEMA.md §4 の前の版。inputs.lock.json を上げる）")
             return []
         if r["removed"] and r["removed_judgment"] != "replaced":
-            d["k"] = "gone"                     # withheld か、まだ判断していない（ADR-4）
+            d["k"] = "gone"                     # 掲載が終わり、withheld か、まだ判断していない（ADR-4）
         elif r["check"] == "image" or r["text_method"] == "none":
             d["k"] = "image"
         else:
@@ -207,7 +207,7 @@ def main(argv):
     order = {c: i for i, (c, _) in enumerate(CATS)}
     docs.sort(key=lambda d: (order[d["cc"]], [-ord(ch) for ch in (d["d"] or d["y"])], d["id"]))
 
-    # 文字の無い資料の文字は持たない。外された資料（gone）は本文を持たない（ADR-4）
+    # 文字の無い資料の文字は持たない。掲載が終わり、本文を使わない資料（gone）は本文を持たない（ADR-4）
     for d in docs:
         if d["k"] != "text":
             d["pages"] = []
@@ -276,7 +276,7 @@ def main(argv):
     from collections import Counter
     kinds = Counter(d["k"] for d in docs)
     total = sum(os.path.getsize(os.path.join(OUT, f)) for f in os.listdir(OUT) if f.endswith(".js"))
-    print(f"資料 {len(docs)}件（文字あり {kinds['text']}・画像だけ {kinds['image']}・外された {kinds['gone']}）、"
+    print(f"資料 {len(docs)}件（文字あり {kinds['text']}・画像だけ {kinds['image']}・掲載が終わり本文を使わない {kinds['gone']}）、"
           f"ページ {sum(len(d['pages']) for d in docs)}、ファイル {len(shards) + 1}、合わせて {total / 1e6:.1f}MB")
     for c, n in CATS:
         ds = [d for d in docs if d["cc"] == c]

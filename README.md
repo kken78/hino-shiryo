@@ -1,47 +1,71 @@
 # 町の資料の検索（日野町データポータル・非公式）
 
-日野町のサイトに公開されている資料（計画、予算・決算、財政、広報ひの、審議会、記者会見など）の本文から、言葉で資料とページを探すページ。日野町データポータル（https://kken78.github.io/hino-portal/ ）の一つ。
+日野町のサイトで公開されている資料の本文を、言葉で探すためのページです。日野町データポータル（https://kken78.github.io/hino-portal/ ）のページの一つで、町の公式のサイトではありません。
 
-- 結果は、資料ごとに、言葉が見つかったページと前後の文を出す。ページの番号を押すと、町のサイトの PDF がそのページで開く。
-- 会議録は、会議録検索（https://kken78.github.io/hino-council-search/ ）で探す。
-- 本文の文字は、原典の PDF から機械で取り出したもの。読み取りの誤りや欠けがあることがある。内容は原典で確かめる。画像だけの資料は、言葉では探せない。
+公開しているページ：https://kken78.github.io/hino-shiryo/
+
+## 探せる資料
+
+- 計画（計画ライブラリで扱っている計画の原典）
+- 予算・決算・財政・交付金の資料
+- 評価と検証、施設や事業の構想と計画、審議会・会議、地域・自治会・住民参加、防災、統計と一覧の資料
+- 定例記者会見の資料
+- 広報ひの
+
+会議録は対象にしていません。会議録は、会議録 横断検索（https://kken78.github.io/hino-council-search/ ）で探せます。
+
+## 探し方と結果
+
+- 空白で区切って言葉を入れると、すべての言葉を含むページを探します。全角と半角の違いと、改行の位置の違いは無視します。
+- 分類と年度で絞り込めます。計画の原典には年度を付けていないので、年度で絞ると計画は出ません。
+- 結果は資料ごとにまとめ、言葉が見つかったページと前後の文を出します。ページの番号を押すと、町のサイトの PDF がそのページで開きます。Excel の資料はシートごとに、町のサイトのページ（HTML）は本文全体を1ページとして探します。
+- 本文の文字は、PDF などから機械で取り出したものです。読み取りの誤りや欠けがあることがあるので、内容は原典で確かめてください。画像だけでできている資料は、本文では探せません。
+
+## 町のサイトでの掲載が終わった資料
+
+町のサイトに資料が載らなくなる理由には、新しい版への差し替えやページの整理のほか、内容の誤りや個人の情報の扱いなどもあります。理由は外からは分からないため、掲載が終わったことが分かった資料は、本文を探す対象にせず、題だけを出します。
+
+理由を確かめ、差し替えや整理によるものと分かった資料は、本文を探す対象に戻します。このとき、リンク先は Webアーカイブ（web.archive.org）の保存版にします。保存版が無いときは、リンクを付けません。
+
+どの資料をどう扱うかは、材料の hino-town-docs の台帳の列（removed・removed_judgment・archive_url）に記録しています（DESIGN.md ADR-4）。
 
 ## 材料
 
 | リポジトリ | 使うもの |
 |---|---|
-| kken78/hino-town-docs | 台帳 `data/sources.tsv`、原典の文字 `data/text/` |
-| kken78/shiga-hino-plans | 計画の一覧 `data/manifest.json`、原典の台帳 `data/sources_index.tsv`、原典の文字 `data/text/` |
+| kken78/hino-town-docs | 資料の台帳 `data/sources.tsv`、原典から取り出した文字 `data/text/` |
+| kken78/shiga-hino-plans | 計画の一覧 `data/manifest.json`、原典の台帳 `data/sources_index.tsv`、原典から取り出した文字 `data/text/` |
 
-材料の版は `inputs.lock.json` で決める（リポジトリごとに commit を1つ）。
+材料の版は、`inputs.lock.json` にリポジトリごとの commit を1つずつ書いて決めています。両方の台帳に同じ資料があるとき（当初予算の附表など）は、hino-town-docs の行を使います。
 
 ## ファイル
 
 | ファイル | 中身 |
 |---|---|
-| index.html | 検索のページ。`data/` を `<script>` で読む（ファイルとして開いても動く） |
-| data/index.js | 資料の一覧（分類・年度・日付・題・URL・形式・大きさ・ページ数）と、本文のファイルの一覧。道具が作る |
-| data/t-<名前>.js | ページごとの本文の文字（探すための形。DESIGN.md ADR-2）。計画と、年ごとに分け、1.5MB を目安にさらに分ける。道具が作る |
+| index.html | 検索のページ。`data/` を `<script>` で読むので、ファイルとして開いても動きます |
+| data/index.js | 資料の一覧（分類・年度・日付・題・URL・形式・大きさ・ページ数）と、本文のファイルの一覧。道具が作ります |
+| data/t-<名前>.js | ページごとの本文の文字（探すための形。DESIGN.md ADR-2）。計画と年ごとに分け、1.5MB を目安にさらに分けています。道具が作ります |
 | inputs.lock.json | 材料のリポジトリと commit |
 | tools/build_data.py | 材料から `data/` を作る道具 |
 
 ## 作り直し方
 
-材料のリポジトリ（hino-town-docs と shiga-hino-plans）を、このリポジトリと同じフォルダに置き、`inputs.lock.json` の commit を取得しておく（`git fetch`）。道具は、作業ツリーでなく、その commit の中身を git から読む。
+材料のリポジトリ（hino-town-docs と shiga-hino-plans）を、このリポジトリと同じフォルダに置き、`inputs.lock.json` の commit を取得しておきます（`git fetch`）。道具は、作業ツリーではなく、その commit の中身を git から読みます。
 
 ```bash
-python3 tools/build_data.py            # 材料が隣のフォルダにあるとき
+python3 tools/build_data.py                              # 材料が隣のフォルダにあるとき
 python3 tools/build_data.py --src <材料を並べたフォルダ>
 ```
 
-台帳のページ数と原典の文字を改ページで分けた数が合わないなど、決まりに合わないものが1つでもあれば、`data/` は書き出されず、終了コード 1 で止まる。材料の版を上げるときは、`inputs.lock.json` の commit を直して道具を実行し、`inputs.lock.json` と `data/` を同じコミットに入れる。
+台帳のページ数と、取り出した文字を改ページで分けた数が合わないなど、決まりに合わないものが1つでもあれば、`data/` を書き出さずに終了コード 1 で止まります。
 
-PR と main への push のたびに、GitHub Actions（`.github/workflows/check.yml`）が lock の commit の材料で道具を実行し、`data/` がコミットされたものと一致するかを確かめる。あわせて、hino-portal の共通の部品の検査（`shared/check.py`・`shared/check_mobile.mjs`）を走らせる。
+材料の版を上げるときは、`inputs.lock.json` の commit を直して道具を実行し、`inputs.lock.json` と `data/` を同じコミットに入れます。
 
-## 町のサイトから外された資料
+PR を作ったときと main に push したときは、GitHub Actions（`.github/workflows/check.yml`）が次のことを確かめます。
 
-町のサイトから外された資料は、本文を検索の対象から外し、題と「町のサイトから外された資料」と確認した日だけを出す。外された理由を確かめ、新しい版への差し替えやページの整理によるものと分かったときは、検索の対象に戻す。戻した資料のリンク先は、Webアーカイブの保存版があればそれにし、無ければリンクを付けない。扱いは hino-town-docs の台帳の列 removed・removed_judgment・archive_url で決める（DESIGN.md ADR-4）。
+- lock の commit の材料で作り直した `data/` が、コミットされたものと一致すること
+- hino-portal の共通の部品と文字の大きさの検査（`shared/check.py`・`shared/check_mobile.mjs`）を通ること
 
 ## ライセンス
 
-コードは MIT License（[LICENSE](LICENSE)）。検索のデータの構造（列の作り方、分類の名前など）は CC BY 4.0（表示は https://github.com/kken78/hino-shiryo ）。資料の題と本文の文字は、日野町など各資料の発行者の著作物で、このリポジトリのライセンスの対象外。
+コードは MIT License です（[LICENSE](LICENSE)）。検索のデータの構造（列の作り方、分類の名前など）は CC BY 4.0 です（表示は https://github.com/kken78/hino-shiryo ）。資料の題と本文の文字は、日野町など各資料の発行者の著作物で、このリポジトリのライセンスの対象外です。
