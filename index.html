@@ -114,7 +114,7 @@ mark{background:#FFE58A;color:inherit;padding:0 1px}
 <dl>
 <dt>このページについて</dt><dd><p>このページは、滋賀県日野町 政策参与の東健二郎が、個人として作成した試作です。日野町の公式のサイトではなく、町の見解を示すものでもありません。</p><p>町のサイトの資料から機械で取り出した本文の文字を、ページごとに分けて探せるようにしています。結果の前後の文は、全角と半角をそろえ、空白と改行を除いた形で出しています。</p></dd>
 <dt>出典</dt><dd>日野町ホームページに公開されている資料（PDF・Excel・ページ）。資料の一覧と取り出した文字は <a href="https://github.com/kken78/hino-town-docs">hino-town-docs</a>（計画は <a href="https://github.com/kken78/shiga-hino-plans">shiga-hino-plans</a>）にあります。各資料へのリンクは結果にあります。</dd>
-<dt>資料の時点</dt><dd>材料の版は2026年11月10日に固定しました。資料ごとの取得日は hino-town-docs と shiga-hino-plans の台帳にあります。町のサイトから外された資料は、本文を探す対象にしていません。</dd>
+<dt>資料の時点</dt><dd>材料の版は2026年11月10日に固定しました。資料ごとの取得日は hino-town-docs と shiga-hino-plans の台帳にあります。町のサイトでの掲載が終わった資料は、理由を確かめるまで本文を探す対象にしていません。</dd>
 <dt>注意</dt><dd><p>内容の正確性を保証するものではありません。最新・正確な情報は日野町の公式ページでご確認ください。</p></dd>
 <dt>データ</dt><dd><a href="https://github.com/kken78/hino-shiryo/tree/main/data">data/</a>（画面用。材料から作ったもの）、<a href="https://github.com/kken78/hino-shiryo/blob/main/inputs.lock.json">inputs.lock.json</a>（材料の版）</dd>
 <dt>ソースコード</dt><dd><a href="https://github.com/kken78/hino-shiryo">kken78/hino-shiryo</a>（GitHub）</dd>
@@ -206,8 +206,8 @@ function show(){
     const head=(d.k==='gone'||!d.u)?ttl:'<a href="'+esc(d.u)+'">'+ttl+'</a>';
     const meta=[CN[d.c],d.y?d.y+'年度':'',d.d||'',(FMT[d.f]||d.f)+(d.b?' '+fmtB(d.b):'')];
     if(d.k==='image')meta.push('画像だけの資料のため、本文では探せません');
-    if(d.k==='gone')meta.push('町のサイトから外された資料のため、本文は探す対象にしていません');
-    if(d.r)meta.push('町のサイトから外された資料（'+d.r+' に確認）。'+(d.u?'リンク先は Webアーカイブの保存版':'保存版が無いのでリンクはありません'));
+    if(d.k==='gone')meta.push('町のサイトでの掲載が終わった資料のため、本文は探す対象にしていません');
+    if(d.r)meta.push('町のサイトでの掲載が終わった資料（'+d.r+' に確認）。'+(d.u?'リンク先は Webアーカイブの保存版':'保存版が無いのでリンクはありません'));
     let h='<div class="doc"><h2>'+head+'</h2><p class="meta">'+meta.filter(Boolean).map(esc).join('　')+'</p>';
     if(words.length&&!hits.length&&tm)h+='<p class="hit">題に見つかりました</p>';
     h+=hits.slice(0,3).map(j=>'<p class="hit">'+(d.u?'<a href="'+esc(link(d,j))+'">'+esc(label(d,j))+'</a>':'<span class="pl">'+esc(label(d,j))+'</span>')+snip(T[i][j])+'</p>').join('');
