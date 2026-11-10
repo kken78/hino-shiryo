@@ -61,6 +61,11 @@ main{padding-bottom:var(--portal-sp3)}
 .load{font-size:var(--portal-fs-sub);color:var(--portal-muted);margin:0 0 var(--portal-sp1)}
 .count{margin:0 0 var(--portal-sp1);font-weight:700}
 .sort{font-size:var(--portal-fs-sub);margin:0 0 var(--portal-sp1)}
+.sort-note{display:block;color:var(--portal-muted);margin-top:4px}
+.cats{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 var(--portal-sp1)}
+.cats button{font-size:var(--portal-fs-sub);font-family:inherit;padding:4px 10px;border:1px solid var(--portal-line);border-radius:999px;background:#fff;color:var(--portal-ink);cursor:pointer}
+.cats button[aria-pressed="true"]{background:var(--portal-ai);border-color:var(--portal-ai);color:#fff}
+.cats button:focus-visible{outline:2px solid #000;box-shadow:0 0 0 4px #FFD43D;outline-offset:1px}
 .sort select{font-size:var(--portal-fs-sub);padding:4px;border:1px solid var(--portal-muted);border-radius:4px;font-family:inherit;background:#fff;color:var(--portal-ink)}
 .doc{border-top:1px solid var(--portal-line);padding:var(--portal-sp2) 0}
 .doc:first-child{border-top:0;padding-top:0}
@@ -104,7 +109,8 @@ mark{background:#FFE58A;color:inherit;padding:0 1px}
 <div class="box">
 <p class="load" id="load" aria-live="polite"></p>
 <p class="count" id="cnt" aria-live="polite"></p>
-<p class="sort"><label for="o">並び</label>　<select id="o"><option value="hit">見つかったページの多い順</option><option value="new">新しい順</option></select></p>
+<div class="cats" id="cats" role="group" aria-label="分類ごとの件数（押すとその分類に絞る）"></div>
+<p class="sort"><label for="o">並び</label>　<select id="o"><option value="title">題に言葉を含む資料を先に</option><option value="new">新しい順</option><option value="pages">言葉の出てくるページの多い順</option></select><span class="sort-note" id="onote"></span></p>
 <div id="res"></div>
 <div class="pager" id="pg"></div>
 </div>
@@ -152,7 +158,7 @@ function loadNext(){
 
 function readState(){
   const h=new URLSearchParams(location.hash.slice(1));
-  $('w').value=h.get('q')||'';$('c').value=h.get('c')||'';$('y').value=h.get('y')||'';$('o').value=h.get('o')==='new'?'new':'hit';
+  $('w').value=h.get('q')||'';$('c').value=h.get('c')||'';$('y').value=h.get('y')||'';$('o').value=['new','pages'].includes(h.get('o'))?h.get('o'):'title';
   page=Math.max(0,(+h.get('p')||1)-1);
 }
 function writeState(){
@@ -160,25 +166,35 @@ function writeState(){
   if($('w').value.trim())h.set('q',$('w').value.trim());
   if($('c').value)h.set('c',$('c').value);
   if($('y').value)h.set('y',$('y').value);
-  if($('o').value==='new')h.set('o','new');
+  if($('o').value!=='title')h.set('o',$('o').value);
   if(page)h.set('p',page+1);
   const s=h.toString();history.replaceState(null,'',s?'#'+s:location.pathname+location.search);
 }
 const dkey=d=>(d.d||d.y||'');
 function run(resetPage){
   words=$('w').value.split(/[\s　]+/).map(nz).filter(Boolean);
-  const c=$('c').value,y=$('y').value;rows=[];
+  const c=$('c').value,y=$('y').value,o=$('o').value;const all=[];
   D.forEach((d,i)=>{
-    if(c&&d.c!==c)return; if(y&&yearOf(d)!==y)return;
-    if(!words.length){rows.push({i,hits:[],tm:false});return;}
+    if(y&&yearOf(d)!==y)return;
+    if(!words.length){all.push({i,hits:[],tm:false});return;}
     const title=nz(d.t+(d.sub||''));
     const tm=words.every(w=>title.includes(w));
     const hits=[];const p=T[i];
     if(p)p.forEach((t,j)=>{if(words.every(w=>t.includes(w)))hits.push(j);});
-    if(hits.length||tm)rows.push({i,hits,tm});
+    if(hits.length||tm)all.push({i,hits,tm});
   });
-  if(words.length&&$('o').value==='hit')rows.sort((a,b)=>b.hits.length-a.hits.length||(b.tm-a.tm)||dkey(D[b.i]).localeCompare(dkey(D[a.i])));
-  else rows.sort((a,b)=>dkey(D[b.i]).localeCompare(dkey(D[a.i]))||a.i-b.i);
+  // 分類ごとの件数（分類の絞り込みを除く。ADR-6）
+  const cnt={};all.forEach(r=>{const k=D[r.i].c;cnt[k]=(cnt[k]||0)+1;});
+  $('cats').innerHTML='<button type="button" data-c="" aria-pressed="'+(!c)+'">すべて '+all.length.toLocaleString()+'</button>'+
+    S.cats.filter(([k])=>cnt[k]).map(([k,n])=>'<button type="button" data-c="'+k+'" aria-pressed="'+(c===k)+'">'+esc(n)+' '+cnt[k].toLocaleString()+'</button>').join('');
+  rows=c?all.filter(r=>D[r.i].c===c):all;
+  const newer=(a,b)=>dkey(D[b.i]).localeCompare(dkey(D[a.i]))||a.i-b.i;
+  if(words.length&&o==='pages')rows.sort((a,b)=>b.hits.length-a.hits.length||newer(a,b));
+  else if(words.length&&o==='title')rows.sort((a,b)=>(b.tm-a.tm)||newer(a,b));
+  else rows.sort(newer);
+  $('onote').textContent=!words.length?'言葉を入れないときは、新しい順に並べます。':
+    o==='title'?'題に言葉を含む資料を先に、それぞれ新しい順に並べます。':
+    o==='pages'?'言葉を含むページの多い資料から並べます。長い資料が上に来やすくなります。':'日付（無ければ年度）の新しい順に並べます。';
   if(resetPage)page=0;
   const last=Math.max(0,Math.ceil(rows.length/PER)-1);if(page>last)page=last;
   show();writeState();
@@ -222,6 +238,7 @@ $('f').addEventListener('submit',e=>{e.preventDefault();run(true);});
 $('c').addEventListener('change',()=>run(true));
 $('y').addEventListener('change',()=>run(true));
 $('o').addEventListener('change',()=>run(true));
+$('cats').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;$('c').value=b.dataset.c;run(true);});
 readState();setLoad();run(false);loadNext();
 })();
 </script>
