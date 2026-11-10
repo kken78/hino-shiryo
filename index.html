@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>町の資料の検索｜日野町データポータル（非公式）</title>
-<meta name="description" content="日野町のサイトに公開されている資料（計画、予算・決算、財政、広報ひの、審議会、記者会見など）の本文から、言葉で資料とページを探します。非公式。">
+<meta name="description" content="日野町のホームページで公開されている資料（計画、予算・決算、財政、広報ひの、審議会、記者会見など）の本文から、言葉を入れて探せます。非公式。">
 <!-- portal-shared:css start --><style>/* 日野町データポータル 共通の部品（見出し・ナビ・ページの見出し・フッター）。
    正本は hino-portal/shared/shell.css。各ページはこれを <style> に写し、CI で同じであることを確かめる（DESIGN.md 9.1）。
    文字の大きさは --portal-fs-sub 14px・--portal-fs 16px・--portal-fs-h1 18px・--portal-fs-h3 20px・--portal-fs-h2 24px の5段階だけ（DESIGN.md 5.2）。色は 3章の藍と朱。書体は端末のもの（5.1）。
@@ -96,8 +96,8 @@ mark{background:#FFE58A;color:inherit;padding:0 1px}
 <div class="portal-page"><div class="portal-wrap">
 <p class="portal-area">資料</p>
 <h1 class="portal-title">町の資料の検索</h1>
-<p class="portal-lead">日野町のサイトに公開されている資料（計画、予算・決算、財政、広報ひの、審議会、記者会見など）<span id="ndocs"></span>件の本文から、言葉で資料とページを探します。ページの番号を押すと、町のサイトの PDF がそのページで開きます。</p>
-<p class="portal-asof">材料の版：<span id="asof">2026年11月10日</span>。会議録は<a href="https://kken78.github.io/hino-council-search/">会議録 横断検索</a>で探します。</p>
+<p class="portal-lead">日野町のホームページで公開されている資料（計画、予算・決算、財政、広報ひの、審議会、記者会見など）<span id="ndocs"></span>件の本文から、言葉を入れて探せます。結果のページ番号を押すと、町のホームページの PDF がそのページで開きます。</p>
+<p class="portal-asof"><span id="asof">2026年11月10日</span>時点の資料を収録しています。会議録は「<a href="https://kken78.github.io/hino-council-search/">会議録 横断検索</a>」で探せます。</p>
 </div></div>
 <main class="portal-wrap">
 <div class="box">
@@ -107,13 +107,13 @@ mark{background:#FFE58A;color:inherit;padding:0 1px}
 <label class="sr" for="y">年度</label><select id="y"><option value="">すべての年度</option></select>
 <button>探す</button>
 </form>
-<p class="note">空白で区切ると、すべての言葉を含むページを探します。全角と半角、改行の位置の違いは無視して探します。本文の文字は PDF から機械で取り出したもので、読み取りの誤りや欠けがあることがあります。画像だけの資料（<span id="nimg"></span>件）は、本文では探せません。計画には年度を付けていないので、年度で絞ると計画は出ません。</p>
+<p class="note">空白で区切ると、すべての言葉を含むページを探します。全角と半角、改行の位置の違いは無視して探します。本文の文字は PDF から機械で取り出したもので、読み取りの誤りや欠けがあることがあります。文字の入っていない、画像だけの資料（<span id="nimg"></span>件）は、本文では探せません。計画には年度を付けていないので、年度で絞ると計画は出ません。</p>
 </div>
 <div class="box">
 <p class="load" id="load" aria-live="polite"></p>
 <p class="count" id="cnt" aria-live="polite"></p>
 <div class="cats" id="cats" role="group" aria-label="分類ごとの件数（押すとその分類に絞る）"></div>
-<p class="sort"><label for="o">並び</label>　<select id="o"><option value="title">関連順</option><option value="new">新しい順</option><option value="pages">本文によく出てくる順</option></select><span class="sort-note" id="onote"></span></p>
+<p class="sort"><label for="o">並べ方</label>　<select id="o"><option value="title">関連順</option><option value="new">新しい順</option><option value="pages">本文によく出てくる順</option></select><span class="sort-note" id="onote"></span></p>
 <div id="res"></div>
 <div class="pager" id="pg"></div>
 </div>
@@ -121,11 +121,11 @@ mark{background:#FFE58A;color:inherit;padding:0 1px}
 <!-- portal-shared:footer start -->
 <footer class="portal-foot"><div class="portal-wrap">
 <dl>
-<dt>このページについて</dt><dd><p>このページは、滋賀県日野町 政策参与の東健二郎が、個人として作成した試作です。日野町の公式のサイトではなく、町の見解を示すものでもありません。</p><p>町のサイトの資料から機械で取り出した本文の文字を、ページごとに分けて探せるようにしています。結果の前後の文は、全角と半角をそろえ、空白と改行を除いた形で出しています。</p></dd>
-<dt>出典</dt><dd>日野町ホームページに公開されている資料（PDF・Excel・ページ）。資料の一覧と取り出した文字は <a href="https://github.com/kken78/hino-town-docs">hino-town-docs</a>（計画は <a href="https://github.com/kken78/shiga-hino-plans">shiga-hino-plans</a>）にあります。各資料へのリンクは結果にあります。</dd>
-<dt>資料の時点</dt><dd>材料の版は2026年11月10日に固定しました。資料ごとの取得日は hino-town-docs と shiga-hino-plans の台帳にあります。町のサイトでの掲載が終わった資料は、理由を確かめるまで本文を探す対象にしていません。</dd>
+<dt>このページについて</dt><dd><p>このページは、滋賀県日野町 政策参与の東健二郎が、個人として作成した試作です。日野町の公式のサイトではなく、町の見解を示すものでもありません。</p><p>町のホームページの資料から機械で取り出した本文の文字を、ページごとに分けて探せるようにしています。結果の前後の文は、全角と半角をそろえ、空白と改行を除いた形で出しています。</p></dd>
+<dt>出典</dt><dd>日野町ホームページで公開されている資料（PDF・Excel・ホームページの記事）。資料の一覧と、資料から取り出した文字は、<a href="https://github.com/kken78/hino-town-docs">hino-town-docs</a>（計画は <a href="https://github.com/kken78/shiga-hino-plans">shiga-hino-plans</a>）に置いています。各資料へのリンクは結果にあります。</dd>
+<dt>資料の時点</dt><dd>2026年11月10日時点で、町のホームページから集めた資料を収録しています。資料ごとの取得日は、hino-town-docs と shiga-hino-plans の一覧にあります。町のホームページでの掲載が終わった資料は、理由を確かめるまで本文では探していません。</dd>
 <dt>注意</dt><dd><p>内容の正確性を保証するものではありません。最新・正確な情報は日野町の公式ページでご確認ください。</p></dd>
-<dt>データ</dt><dd><a href="https://github.com/kken78/hino-shiryo/tree/main/data">data/</a>（画面用。材料から作ったもの）、<a href="https://github.com/kken78/hino-shiryo/blob/main/inputs.lock.json">inputs.lock.json</a>（材料の版）</dd>
+<dt>データ</dt><dd><a href="https://github.com/kken78/hino-shiryo/tree/main/data">data/</a>（このページで使うデータ）、<a href="https://github.com/kken78/hino-shiryo/blob/main/inputs.lock.json">inputs.lock.json</a>（収録した資料の版の記録）</dd>
 <dt>ソースコード</dt><dd><a href="https://github.com/kken78/hino-shiryo">kken78/hino-shiryo</a>（GitHub）</dd>
 <dt>ライセンス</dt><dd>コードは MIT License。データの構造は CC BY 4.0。資料のタイトルと本文の文字は日野町など各資料の発行者の著作物で、このリポジトリのライセンスの対象外です。</dd>
 </dl>
@@ -220,7 +220,7 @@ function link(d,j){
 function label(d,j){return d.l?d.l[j]:(j+1)+'ページ';}
 function show(){
   const n=rows.length,np=rows.reduce((a,r)=>a+r.hits.length,0);
-  $('cnt').textContent=words.length?(n.toLocaleString()+'件の資料に見つかりました（本文 '+np.toLocaleString()+'ページ）'):(n.toLocaleString()+'件の資料');
+  $('cnt').textContent=words.length?(n.toLocaleString()+'件の資料で見つかりました（本文の '+np.toLocaleString()+'ページ）'):(n.toLocaleString()+'件の資料');
   const part=rows.slice(page*PER,page*PER+PER);
   $('res').innerHTML=part.map(({i,hits,tm})=>{
     const d=D[i];
@@ -228,8 +228,8 @@ function show(){
     const head=(d.k==='gone'||!d.u)?ttl:'<a href="'+esc(d.u)+'">'+ttl+'</a>';
     const meta=[CN[d.c],d.y?d.y+'年度':'',d.d||'',(FMT[d.f]||d.f)+(d.b?' '+fmtB(d.b):'')];
     if(d.k==='image')meta.push('画像だけの資料のため、本文では探せません');
-    if(d.k==='gone')meta.push('町のサイトでの掲載が終わった資料のため、本文は探す対象にしていません');
-    if(d.r)meta.push('町のサイトでの掲載が終わった資料（'+d.r+' に確認）。'+(d.u?'リンク先は Webアーカイブの保存版':'保存版が無いのでリンクはありません'));
+    if(d.k==='gone')meta.push('町のホームページでの掲載が終わった資料のため、本文では探していません');
+    if(d.r)meta.push('町のホームページでの掲載が終わった資料（'+d.r+' に確認）。'+(d.u?'リンク先は、Webアーカイブ（ホームページの保存サービス）に残っている写しです':'保存版が無いのでリンクはありません'));
     let h='<div class="doc"><h2>'+head+'</h2>';
     if(d.c==='koho')h+='<ul class="kiji">'+heads(d).map(t=>{const x=nz(t),on=words.length&&words.every(w=>x.includes(w));return '<li'+(on?' class="on"':'')+'>'+(words.length?hl(t):esc(t))+'</li>';}).join('')+'</ul>';
     h+='<p class="meta">'+meta.filter(Boolean).map(esc).join('　')+'</p>';
